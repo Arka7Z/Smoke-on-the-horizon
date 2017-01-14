@@ -16,6 +16,9 @@ int TIME=0;
 FILE *adm_file,*sec_file,*org_file;
 int max_leaves;
 
+typedef struct node{
+char id[20];
+}node;
 typedef struct sec_info{
   char name[10];
   char id[20];
@@ -27,6 +30,7 @@ typedef struct sec_info{
   int month1[16],month2[16];
 
 }sec_info;
+node person[max_security];
 
 typedef struct admin_info{
   char name[10];
@@ -50,7 +54,7 @@ sec_info assign(sec_info tmp1,sec_info tmp2)
     }
     return tmp1;
 }
-sec_info last_occurence(sec_info key)
+sec_info last_occurence(char* key)
 {
 
 
@@ -59,9 +63,10 @@ sec_info last_occurence(sec_info key)
         sec_info input;
         while (fread (&input, sizeof(adm_info), 1, sec_file))
         {
-            if (input.id==key.id)
+            if (strcmp(input.id,key)==0)
                 tmp=assign(tmp,input);
         }
+        fclose(sec_file);
         return tmp;
 }
 
@@ -197,17 +202,21 @@ void sec_signup()
       printf("Sorry ,an account with given credentials is already present\nPlease try again\n\n");
       sec_signup();
   }
-  tmp2=assign(tmp2,tmp);
-  org_file==fopen("Original.txt","a+");
-  fwrite (&tmp2, sizeof(sec_info), 1,org_file);
 
-  sec_file=fopen ("SecurityInfo.txt","a+");
+  org_file==fopen ("OrgSecurity.txt","a");
+  int i1=fwrite(&tmp, sizeof(sec_info), 1,org_file);
+  fclose(org_file);
 
-  fwrite (&tmp, sizeof(sec_info), 1,sec_file);
+  strcpy(person[signed_up].id,tmp.id);
+
+  sec_file=fopen ("SecurityInfo.txt","a");
+
+  int i2=fwrite(&tmp, sizeof(sec_info), 1,sec_file);
+  printf("%d %d ints \n",i1,i2);
   printf("You have been successfully signed up\n");
 
 
-  fclose(org_file);
+
     fclose(sec_file);
 
   signed_up++;
@@ -267,9 +276,13 @@ void update_request(sec_info key,int date)
     sec_file=fopen ("SecurityInfo.txt","a+");
     sec_info tmp;
     sec_info input;
-    while (fread (&input, sizeof(adm_info), 1, sec_file))
+    char id[20];
+    int count=0,i=0;
+        for(i =0;i<n_security;i++)
+    //while (fread (&input, sizeof(adm_info), 1, sec_file))
     {
-        input=last_occurence(input);
+        strcpy(id,person[i].id);
+        input=last_occurence(id);
         if (strcmp(input.id,key.id)==0 && input.request==false)
         {
             tmp=input;
@@ -479,7 +492,7 @@ void approve_all(int date)
     sec_file=fopen ("SecurityInfo.txt","r");
     sec_info tmp;
     sec_info input;
-    sec_info approved[n_security-places];
+    sec_info approved[max_security];
     int count=0;
     while (fread (&input, sizeof(adm_info), 1, sec_file))
     {
@@ -512,7 +525,7 @@ void approve_all(int date)
 
 bool check_all_places(int place_array[])
 {   int i;
-    for( i=0;i<places+1;i++)
+    for( i=1;i<places+1;i++)
         if (!place_array[i])
             return false;
     return true;
@@ -528,15 +541,18 @@ void make_timetable(int date)
         approve_all(date);
 
     }
+
     else
     {   //get them approved individually
-        org_file=fopen ("Original.txt","a+");
+        org_file=fopen ("OrgSecurity.txt","a+");
         sec_info tmp;
         sec_info input;
-        int count=0;
-        while (fread (&input, sizeof(sec_info), 1, org_file))
-        {
-            input=last_occurence(input);
+        char id[20];
+        int count=0,i=0;
+        for(i =0;i<n_security;i++)
+        //while (fread (&input, sizeof(sec_info), 1, org_file))
+        {    strcpy(id,person[i].id);
+            input=last_occurence(id);
             if (approved>feasible_leaves)
             {
                 printf("Error:Deficit of personnel.Please try again\n");
@@ -565,6 +581,7 @@ void make_timetable(int date)
         }
         fclose(org_file);
     }
+    printf("Out of if\n");
     sec_file=fopen ("SecurityInfo.txt","a+");
     int i_count=0;
     for(i_count=0;i_count<appr_count;i_count++)
@@ -578,47 +595,54 @@ void make_timetable(int date)
     fclose(sec_file);
 
      //assigning final places of duty
-    org_file=fopen("Original.txt","r");
+
     sec_info input,tmp,f_record[max_security];
      int duty;
     int count=0;
     int place_array[max_places+1]={0};
-    while (fread (&input, sizeof(adm_info), 1, org_file))
-    {   tmp=last_occurence(input);
+    char id[20];
+    int i=0;
+    printf("n_securitty is %d\n",n_security);
+
+        for(i =0;i<n_security;i++)
+    {   printf("INside for\n");
+        strcpy(id,person[i].id);
+        tmp=last_occurence(id);
         if (tmp.request==false || (tmp.approved==false && tmp.request==true && tmp.req_date==date))
         {
 
-            printf("Enter the place of duty for %s:",input.id);
+            printf("Enter the place of duty for %s:",tmp.id);
             scanf("%d",&duty);
             place_array[duty]=1;
             if (date<=15)
             {
                tmp.month1[date]=duty;
-               f_record[count++]=input;
+               f_record[count++]=tmp;
             }
             else
             {
                tmp.month2[date-15]=duty;
-               f_record[count++]=input;
+               f_record[count++]=tmp;
             }
         }
-        else if(input.request==true && input.approved==true)
+        else if(tmp.request==true && tmp.approved==true)
         {
              if (date<=15)
             {
                tmp.month1[date]=0;
-               f_record[count++]=input;
+               f_record[count++]=tmp;
             }
             else
             {
                tmp.month2[date-15]=0;
-               f_record[count++]=input;
+               f_record[count++]=tmp;
             }
         }
         else
             ;
     }
-    fclose(org_file);
+
+
     if (!check_all_places(place_array))
     {
         printf("All places have not been assigned properly\nPlease try again\n\n");
