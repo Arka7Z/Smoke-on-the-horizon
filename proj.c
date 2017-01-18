@@ -6,19 +6,29 @@
 #define max_places 50
 #define max_security 100
 
-bool timetable[31];
+void main_input();
+
+bool timetable[31],admin_signed_up=false;
 int const_leaves=-1;               //-1->indicates not initialized
 int fine=-1;
 int places=-1;
 int n_security=-1;
 int signed_up=0;                    //stores number of security personal already signed up
 int TIME=0;
+int def_salary;
 FILE *adm_file,*sec_file,*org_file;
 int max_leaves;
 
 typedef struct node{
 char id[20];
 }node;
+
+typedef struct duty{
+int place;
+int start;
+int end;
+}duty;
+
 typedef struct sec_info{
   char name[10];
   char id[20];
@@ -27,16 +37,46 @@ typedef struct sec_info{
   int request;
   int req_date;
   bool approved;
-  int month1[16],month2[16];
+  duty month1[16],month2[16];
 
 }sec_info;
-node person[max_security];
+sec_info person[max_security];
 
 typedef struct admin_info{
   char name[10];
   char id[20];
   char password[10];
 }adm_info;
+
+bool next_seven(int time)
+{   int i;
+    for (i=1;i<=7 && (time+i<=30);i++)
+        if (!timetable[i+time])
+            return false;
+    return true;
+}
+
+
+void check_for_next_seven()
+{   //timetable priniting for debugging
+    int i;
+   /* for (i=1;i<=10;i++)
+    {
+        if (timetable[i])
+            printf("done for %d\n",i);
+        else
+            printf("not done for %d\n",i);
+    }*/
+    bool check=next_seven(TIME);
+    if (check==true)
+        return;
+    else
+    {
+        printf("Timetable yet to be prepared for next 7 days.Admin requested to do so.\nRedirected\n\n");
+        admin_login();
+        check_for_next_seven();
+    }
+}
 
 sec_info assign(sec_info tmp1,sec_info tmp2)
 {   strcpy(tmp1.name,tmp2.name);
@@ -54,19 +94,20 @@ sec_info assign(sec_info tmp1,sec_info tmp2)
     }
     return tmp1;
 }
-sec_info last_occurence(char* key)
+sec_info last_occurence(sec_info key)
 {
 
-
-        sec_file=fopen ("SecurityInfo.txt","a+");
+        sec_file=fopen ("SecurityInfo.txt","r");
         sec_info tmp;
         sec_info input;
-        while (fread (&input, sizeof(adm_info), 1, sec_file))
+        while (fread (&input, sizeof(sec_info), 1, sec_file))
         {
-            if (strcmp(input.id,key)==0)
+
+            if (strcmp(input.id,key.id)==0)
                 tmp=assign(tmp,input);
         }
         fclose(sec_file);
+
         return tmp;
 }
 
@@ -78,7 +119,7 @@ sec_info initialize(sec_info tmp)
   tmp.approved=0;
   int i;
   for (i =0;i<=15;i++)
-    tmp.month2[i]=tmp.month1[i]=0;
+    tmp.month2[i].place=tmp.month1[i].place=0;
 
   return tmp;
 }
@@ -133,11 +174,11 @@ bool adm_present(adm_info tmp)
 bool sec_valid(sec_info tmp)
 {
     org_file=fopen ("SecurityInfo.txt","r");
-    printf("entering check %s %s\n",tmp.id,tmp.password);
+    //printf("entering check %s %s\n",tmp.id,tmp.password);
     sec_info input;
     while (fread (&input, sizeof(sec_info), 1, org_file))
     {
-        printf("check %s %s\n",input.id,input.password);
+        //printf("check %s %s\n",input.id,input.password);
         if (strcmp(input.id,tmp.id)==0 && strcmp(input.password,tmp.password)==0)
         {
            fclose(adm_file);
@@ -168,8 +209,10 @@ bool sec_present(sec_info tmp)
 
 void sec_signup()
 {
+  fflush(stdin);
   sec_info tmp;
-  printf("Welcome to the signup portal\n");
+  printf("\n\n---------------------\nWelcome to the Security Personnel Signup Portal\n");
+
   printf("Please enter your name\n");
   scanf("%s",tmp.name);
   char stray;
@@ -203,16 +246,14 @@ void sec_signup()
       sec_signup();
   }
 
-  org_file==fopen ("OrgSecurity.txt","a");
-  int i1=fwrite(&tmp, sizeof(sec_info), 1,org_file);
-  fclose(org_file);
 
   strcpy(person[signed_up].id,tmp.id);
 
   sec_file=fopen ("SecurityInfo.txt","a");
+  //printf("Writing to security file %s %s %s\n",tmp.id,tmp.password,tmp.name);
 
   int i2=fwrite(&tmp, sizeof(sec_info), 1,sec_file);
-  printf("%d %d ints \n",i1,i2);
+  //printf(" %d ints \n",i2);
   printf("You have been successfully signed up\n");
 
 
@@ -222,7 +263,7 @@ void sec_signup()
   signed_up++;
   if (signed_up<n_security)
   {
-      printf("All security persons are yet to sign up\n.Please sign up\n\n");
+      printf("----------\nAll security persons are yet to sign up\n.Please sign up\n-------------\n");
       sec_signup();
   }
 }
@@ -230,7 +271,7 @@ void sec_signup()
 void adm_signup()
 {
   adm_info tmp;
-  printf("Welcome to the signup portal\n");
+  printf("\n\n------------------\nWelcome to the Admin Sign Up Portal\n");
   //load the main file
   printf("Please enter your name\n");
   scanf("%s",tmp.name);
@@ -253,8 +294,20 @@ void adm_signup()
 
   if (const_leaves==-1 || fine==-1 || places==-1 || n_security==-1)
   {
-      printf("Please enter the number of places to be secured,the number of leaves allowed ,the fine amount to be deducted respectively and the number of security persons\n");
-      scanf("%d %d %d %d",&places,&const_leaves,&fine,&n_security);
+             printf("\n---------------------\nPlease enter the following:\nThe number of places to be secured:");
+             scanf("%d",&places);
+             printf("The number of leaves allowed:");
+             scanf("%d",&const_leaves);
+
+             printf("The fine amount to be deducted on exceeding default leaves:");
+             scanf("%d",&fine);
+
+             printf("The number of security persons:");
+             scanf("%d",&n_security);
+             printf("The default salary:");
+             scanf("%d",&def_salary);
+             printf("------------------\n");
+     // scanf("%d %d %d %d",&places,&const_leaves,&fine,&n_security);
 
   }
   if (adm_present(tmp)==true)
@@ -267,10 +320,36 @@ void adm_signup()
 
 
    printf("You have been successfully signed up\n");
+   admin_signed_up=true;
    fclose(adm_file);
 
 }
-
+void check_leave_request(sec_info tmp)
+{
+    tmp=last_occurence(tmp);
+    printf("Please enter the date of your leave request\n");
+    int check_date;
+    scanf("%d",&check_date);
+    if (timetable[check_date]==false)
+    {
+        printf("Admin is yet to prepare timetable for %d\nPlease check again later\n----------------\n",check_date);
+    }
+    if (check_date<=15)
+    {
+        //printf("%d in check leave,%s\n",tmp.month1[check_date],tmp.id);
+        if (timetable[check_date]==true && tmp.month1[check_date].place==0)
+            printf("Your leave request on %d has been approved\n",check_date);
+        else if (timetable[check_date]==true && tmp.month1[check_date].place!=0)
+            printf("Sorry.Your leave request on %d has been declined by the manager\n",check_date);
+    }
+    else
+    {
+        if (timetable[check_date]==true && tmp.month2[check_date-15].place==0)
+            printf("Your leave request on %d has been approved\n",check_date);
+        else if (timetable[check_date]==true && tmp.month2[check_date-15].place!=0)
+            printf("Sorry.Your leave request on %d has been declined by the manager\n",check_date);
+    }
+}
 void update_request(sec_info key,int date)
 {
     sec_file=fopen ("SecurityInfo.txt","a+");
@@ -282,12 +361,12 @@ void update_request(sec_info key,int date)
     //while (fread (&input, sizeof(adm_info), 1, sec_file))
     {
         strcpy(id,person[i].id);
-        input=last_occurence(id);
-        if (strcmp(input.id,key.id)==0 && input.request==false)
+        input=last_occurence(person[i]);
+        if (strcmp(input.id,key.id)==0 && input.request==0)
         {
             tmp=input;
             fclose(sec_file);
-            tmp.request=true;
+            tmp.request=1;
             tmp.req_date=date;
             sec_file=fopen("SecurityInfo.txt","a+");
             fwrite (&tmp, sizeof(sec_info), 1,sec_file);
@@ -332,10 +411,12 @@ void request(sec_info tmp)
 
 void view_duty(sec_info key)
 {  //invoke file print for the next 7 days for the person and return
+
+    check_for_next_seven();
      sec_file=fopen ("SecurityInfo.txt","a+");
     sec_info tmp;                      //for storing the last entry
     sec_info input;
-    while (fread (&input, sizeof(adm_info), 1, sec_file))
+    while (fread (&input, sizeof(sec_info), 1, sec_file))
     {
         if (strcmp(input.id,key.id)==0)
             tmp=input;
@@ -348,32 +429,37 @@ void view_duty(sec_info key)
      int f_day=TIME+day;
      if(f_day<=15)
         {
-            if (tmp.month1[f_day]=0)
+            if (tmp.month1[f_day].place==0)
                 printf("You don't have any duty on %d\n",f_day);
             else
-                printf("Duty on %d at %d\n",tmp.month1[f_day],f_day);
+                printf("Duty at %d on %d from %d Hours to %d Hours\n",tmp.month1[f_day].place,f_day,tmp.month1[f_day].start,tmp.month1[f_day].end);
         }
      else
         {   if (f_day-15<=15)
           {
-             if (tmp.month2[f_day-15]=0)
+             if (tmp.month2[f_day-15].place==0)
                 printf("You don't have any duty on %d\n",f_day-15);
             else
-                printf("Duty on %d at %d\n",tmp.month1[f_day-15],f_day-15);
+                printf("Duty at %d on %d from %d Hours to %d Hours\n",tmp.month1[f_day-15].place,f_day-15,tmp.month2[f_day-15].start,tmp.month2[f_day-15].end);
           }
         }
     }
     fclose(sec_file);
-    printf("Thank You!\n\n");
+    printf("Thank You!\n-----------------\n");
 
 }
 
 void view_leave(sec_info key)                               //change ret type into int,will help in request()
 {
-        sec_file=fopen ("SecurityInfo.txt","a+");
+    if (!admin_signed_up)
+    {
+        printf("Admin is yet to initialize system\n.Redirected to main menu\n-----------------\n");
+        main_input();
+    }
+    sec_file=fopen ("SecurityInfo.txt","a+");
     sec_info tmp;                      //for storing the last entry
     sec_info input;
-    while (fread (&input, sizeof(adm_info), 1, sec_file))
+    while (fread (&input, sizeof(sec_info), 1, sec_file))
     {
         if (strcmp(input.id,key.id)==0)
             tmp=input;
@@ -389,7 +475,7 @@ void security_login()
 {
   sec_info tmp;
   fflush(stdin);
-  printf("\nWelcome to the sign in portal\n");
+  printf("\n\n------------------\nWelcome to the Security Sign In Portal\n");
   //load the main file
   printf("Please enter your insitude ID number\n");
   scanf("%s",tmp.id);
@@ -404,7 +490,7 @@ void security_login()
   if(sec_valid(tmp)==true)
     {
       printf("You are successfully logged in\n");
-      printf("Enter 0 to Log out \n1 To view duty status for the next week \n2 To view leave status \n3 To request for leave or to do over duty\n");
+      printf("Enter 0 to Log out \n1 To view duty status for the next week \n2 To view leave status \n3 To request for leave or to do over duty\n4 To check status of leave request\n");
       int option;
       scanf("%d",&option);
       if(option==0)
@@ -421,6 +507,10 @@ void security_login()
         {
             request(tmp);
         }
+        else if (option==4)
+        {
+            check_leave_request(tmp);
+        }
       else
         {
             printf("Invalid input\n");
@@ -436,24 +526,58 @@ void security_login()
 
 }
 
+void check_status_by_admin()
+{
+    fflush(stdin);
+    char identity[10];
+    printf("Enter the ID of the security person you want to check status for: ");
+    scanf("%s",identity);
+    sec_info tmp;
+    tmp=initialize(tmp);
+    strcpy(tmp.id,identity);
+    tmp=last_occurence(tmp);
+    if (TIME!=0)
+    {
+
+    if (TIME<=15)
+    {
+        if (tmp.month1[TIME].place==0)
+            printf("Sir,%s is on an approved leave\n",identity);
+        else
+            printf("%s is on duty at %d\n",identity,tmp.month1[TIME].place);
+    }
+    else
+    {
+      if (tmp.month2[TIME-15].place==0)
+            printf("Sir,%s is on an approved leave\n",identity);
+        else
+            printf("%s is on duty at %d\n",identity,tmp.month2[TIME-16].place);
+    }
+    }
+    printf("\n%s has %d leaves left \n",identity,tmp.leaves);
+
+}
+
 void admin_login()
 {
   adm_info tmp;
-  printf("Welcome to the sign in portal\n");
+  fflush(stdin);
+  printf("\n\n---------------\nWelcome to the Admin Sign In portal\n");
   //load the main file
   char stray;
   printf("Please enter your insitude ID number\n");
   scanf("%s",tmp.id);
+  scanf("%c",&stray);
   printf("Please enter your  password\n");
   scanf("%s",tmp.password);
-  scanf("%c",&stray);
+
 
   //check validity
   if(adm_valid(tmp)==true)
   {
       int tmp;
       printf("You are successfully logged in,Sir\n");
-      printf("Enter preferences:\n1 for making timetable\n2 Exit\n ");
+      printf("Enter preferences:\n1 for making timetable\n2 Check status for a security person\n3 EXIT \n");
       scanf("%d",&tmp);
       if (tmp==1)
       {
@@ -463,8 +587,10 @@ void admin_login()
           make_timetable(date);
           timetable[date]=true;
       }
-      if (tmp==2)
+      if (tmp==3)
         return;
+      if (tmp==2)
+        check_status_by_admin();
 
   }
   else
@@ -479,7 +605,7 @@ int count_requests(int date)
     sec_file=fopen ("SecurityInfo.txt","r");
     sec_info input;
     int count=0;
-    while (fread (&input, sizeof(adm_info), 1, adm_file))
+    while (fread (&input, sizeof(sec_info), 1, sec_file))
     {
         if (input.request==1 && input.req_date==date)
                 count++;
@@ -494,18 +620,18 @@ void approve_all(int date)
     sec_info input;
     sec_info approved[max_security];
     int count=0;
-    while (fread (&input, sizeof(adm_info), 1, sec_file))
+    while (fread (&input, sizeof(sec_info), 1, sec_file))
     {
         if (input.request==1 && input.req_date==date && input.approved==false)
         {
             approved[count]=assign(tmp,input);
             approved[count].approved=true;
-            approved[count].request=false;
+            approved[count].request=1;
             approved[count].req_date=date;                 //let it remain that way helps in query by sec personnel
             if (date<=15)
-                approved[count].month1[date]=0;
+                approved[count].month1[date].place=0;
             else
-                approved[count].month2[date-14]=0;
+                approved[count].month2[date-15].place=0;
             approved[count].leaves+=1;
             count++;
         }
@@ -515,7 +641,11 @@ void approve_all(int date)
     int i_count=0;
     for(i_count=0;i_count<=count;i_count++)
     {
-        fwrite (&(approved[i_count]), sizeof(sec_info), 1,sec_file);
+        sec_info tmp;
+        tmp=approved[i_count];
+        //printf("writing approval for %s\n",tmp.id,tmp.req_date);
+        int write=fwrite (&(approved[i_count]), sizeof(sec_info), 1,sec_file);
+        //printf("%d is returned by fwrite\n",write);
     }
     fclose(sec_file);
 
@@ -532,8 +662,16 @@ bool check_all_places(int place_array[])
 
 }
 void make_timetable(int date)
-{   int places_assigned=0,feasible_leaves=(n_security-places),appr_count=0,notappr_count=0;
+{
+    if (signed_up<n_security)
+    {
+        printf("Sorry Sir.But all the security personnel are yet to sign up\nYou are redirected to the main menu\n--------------\n");
+        main_input();
+    }
+    int places_assigned=0,feasible_leaves=(n_security-places),appr_count=0,notappr_count=0;
     int n_requested=count_requests(date);
+    //printf("Number of leaves requested on %d is %d\n",date,n_requested);
+    //printf("Feasible is %d\n",feasible_leaves);
     sec_info approved[n_security],not_approved[n_security];
     if (n_requested<=feasible_leaves)
     {
@@ -552,12 +690,11 @@ void make_timetable(int date)
         for(i =0;i<n_security;i++)
         //while (fread (&input, sizeof(sec_info), 1, org_file))
         {    strcpy(id,person[i].id);
-            input=last_occurence(id);
-            if (approved>feasible_leaves)
-            {
-                printf("Error:Deficit of personnel.Please try again\n");
-                make_timetable(date);
-            }
+                sec_info tmp2;
+                tmp2=assign(tmp2,person[i]);
+            input=last_occurence(tmp2);
+
+
             if (input.request==true && input.req_date==date)
             {
                 fflush(stdin);
@@ -569,28 +706,55 @@ void make_timetable(int date)
                 if (in=='Y')
                     {
                         input.approved=true;
+                        if (date<=15)
+                        {
+                            input.month1[date].place=0;
+                        }
+                        else
+                        {
+                            input.month2[date-15].place=0;
+                        }
                         approved[appr_count++]=input;
+                        //printf("Leave approved for %s on %d\n",approved[appr_count-1].id,date);
                     }
                 else
                     {
                         input.approved=false;
+                        if (date<=15)
+                        {
+                            input.month1[date].place=100;
+                        }
+                        else
+                        {
+                            input.month2[date-15].place=100;
+                        }
+
                         not_approved[notappr_count++]=input;
                     }
 
             }
         }
+
         fclose(org_file);
+         if (appr_count>feasible_leaves)
+            {
+                printf("Error:Deficit of personnel.Please try again\n");
+                make_timetable(date);
+            }
     }
-    printf("Out of if\n");
+    //printf("Out of if\n");
     sec_file=fopen ("SecurityInfo.txt","a+");
     int i_count=0;
     for(i_count=0;i_count<appr_count;i_count++)
     {
-        fwrite (&(approved[i_count]), sizeof(sec_info), 1,sec_file);
+        int write=fwrite (&(approved[i_count]), sizeof(sec_info), 1,sec_file);
+        //printf("Leave writing  for %s on %d ,%d returned by write\n",approved[appr_count-1].id,date,write);
+
     }
     for(i_count=0;i_count<notappr_count;i_count++)
     {
         fwrite (&(not_approved[i_count]), sizeof(sec_info), 1,sec_file);
+
     }
     fclose(sec_file);
 
@@ -602,44 +766,54 @@ void make_timetable(int date)
     int place_array[max_places+1]={0};
     char id[20];
     int i=0;
-    printf("n_securitty is %d\n",n_security);
 
         for(i =0;i<n_security;i++)
-    {   printf("INside for\n");
-        strcpy(id,person[i].id);
-        tmp=last_occurence(id);
-        if (tmp.request==false || (tmp.approved==false && tmp.request==true && tmp.req_date==date))
-        {
+    {
+        sec_info tmp2=assign(tmp2,person[i]);
+        tmp=last_occurence(person[i]);
 
+
+        if (tmp.request==0 || (tmp.approved==false /*&& tmp.request==1 && tmp.req_date==date*/))
+        {
+            int s,e;
             printf("Enter the place of duty for %s:",tmp.id);
             scanf("%d",&duty);
             place_array[duty]=1;
+            printf("Enter the start time of the duty in 24 hours format in HH form\n");
+            scanf("%d",&s);
+            printf("Enter the end time of the duty in a similar format\n");
+            scanf("%d",&e);
             if (date<=15)
             {
-               tmp.month1[date]=duty;
+               tmp.month1[date].place=duty;
+               tmp.month1[date].start=s;
+               tmp.month1[date].end=e;
                f_record[count++]=tmp;
+               //printf("duty given is %d\n",f_record[count-1].month1[date]);
             }
             else
             {
-               tmp.month2[date-15]=duty;
+               tmp.month2[date-15].place=duty;
+               tmp.month2[date].start=s;
+               tmp.month2[date].end=e;
                f_record[count++]=tmp;
             }
         }
-        else if(tmp.request==true && tmp.approved==true)
+        else if(tmp.request==1 && tmp.approved==true)
         {
              if (date<=15)
             {
-               tmp.month1[date]=0;
+               tmp.month1[date].place=0;
                f_record[count++]=tmp;
             }
             else
             {
-               tmp.month2[date-15]=0;
+               tmp.month2[date-15].place=0;
                f_record[count++]=tmp;
             }
         }
         else
-            ;
+            printf("else in for\n");
     }
 
 
@@ -651,25 +825,20 @@ void make_timetable(int date)
     //save final changes to the file for day 'day'
 
     sec_file=fopen("SecurityInfo.txt","a+");
-    for(i_count=0;i_count<count;count++)
+    for(i_count=0;i_count<count;i_count++)
     {
-        fwrite (&(f_record[i_count]), sizeof(sec_info), 1,sec_file);
+        //printf("Writing to file, %d for %s on %d",f_record[i_count].month1[date],f_record[i_count].id,date);
+        int i=fwrite (&(f_record[i_count]), sizeof(sec_info), 1,sec_file);
+        //printf("Write returns %d\n",i);
     }
     fclose(sec_file);
-
+    timetable[date]=true;
 }
 
-bool next_seven(int TIME)
-{   int i;
-    for (i=1;i<=7 && (TIME+i<=30);i++)
-        if (!timetable[i+TIME])
-            return false;
-    return true;
-}
-int main()
-{ int time_counter=0;
-  for(time_counter=0;TIME<=30;time_counter++,TIME++)
-  {     printf("Day %d",TIME);
+
+void main_input()
+{
+         printf("----------------\nDay %d\nMain Menu\n",TIME);
         printf("Please enter -1 as a preference if no operations are left to be performed for today\n\n");
         while(1)
     {
@@ -688,8 +857,9 @@ int main()
         char person;
         char tmp;
         scanf("%c",&tmp);
-        printf("Enter preferences:\n'M' if you are a manager \n 'S' if you are a security personnel\n");
+        printf("Enter preferences:\nM for manager \nS for security personnel\n");
         scanf("%c",&person);
+
         if (person!='M' && person!='S')
             {
                 printf("Please enter a valid input\n");
@@ -702,13 +872,60 @@ int main()
                 else
                     security(sign);
             }
-            if ((!next_seven(TIME))&&(n_security==-1))
+           /* if ((!next_seven(TIME))&&(n_security==-1)&&(person!='M')  );
             {
-                printf("Admin needs to login and make time table for the next seven days\n\n");
-                admin_login();
-            }
+                if (signed_up!=0)
+                {
+                    printf("n security :%d  TIme :%d \n ",n_security,TIME);
+                    printf("Admin needs to login and make time table for the next seven days\n\n");
+                    admin_login();
+                }
+            }*/
+
+
     }
+
+}
+
+
+void salary()
+{
+    printf("------------------\nWelcome to the salary portal\n");
+
+    sec_info tmp;
+    int i;
+    for(i=0;i<n_security;i++)
+    {
+        tmp=last_occurence(person[i]);
+        int exceed=tmp.leaves-const_leaves>0?tmp.leaves-const_leaves:0;
+        int sal=def_salary-(exceed*fine);
+        printf("Salary for %s is Rs. %d\n",tmp.id,sal);
+    }
+}
+
+int main()
+{ int time_counter=0;
+  int i;
+  for(i=0;i<31;i++)                         //initializing timetable to all false i.e not prepared
+    timetable[i]=false;
+  for(time_counter=0;TIME<=30;TIME++)
+  {
+      main_input();
+      if (signed_up==0)
+      {
+          printf("All users need to sign up\n-------------\n");
+          sec_signup();
+
+      }
+      if (!admin_signed_up)
+      {
+          printf("Admin should Sign Up\n");
+          adm_signup();
+      }
+      check_for_next_seven();
   }
+  salary();
+  return 0;
 }
 
 
