@@ -29,6 +29,12 @@ int start;
 int end;
 }duty;
 
+typedef struct oduty{
+    int place;
+    int start;
+    int end;
+    int req;
+}oduty;
 typedef struct sec_info{
   char name[10];
   char id[20];
@@ -38,6 +44,7 @@ typedef struct sec_info{
   int req_date;
   bool approved;
   duty month1[16],month2[16];
+  oduty over1[16],over2[16];
 
 }sec_info;
 sec_info person[max_security];
@@ -91,6 +98,8 @@ sec_info assign(sec_info tmp1,sec_info tmp2)
     {
         tmp1.month1[i]=tmp2.month1[i];
         tmp1.month2[i]=tmp2.month2[i];
+        tmp1.over1[i]=tmp2.over1[i];
+        tmp1.over2[i]=tmp2.over2[i];
     }
     return tmp1;
 }
@@ -119,7 +128,13 @@ sec_info initialize(sec_info tmp)
   tmp.approved=0;
   int i;
   for (i =0;i<=15;i++)
-    tmp.month2[i].place=tmp.month1[i].place=0;
+        tmp.month2[i].place=tmp.month1[i].place=0;
+  for (i =0;i<=15;i++)
+    {
+        tmp.over1[i].place=tmp.over2[i].place=0;
+        tmp.over1[i].req=tmp.over2[i].req=0;
+    }
+
 
   return tmp;
 }
@@ -324,6 +339,32 @@ void adm_signup()
    fclose(adm_file);
 
 }
+void check_overtime_request(sec_info tmp)
+{
+    tmp=last_occurence(tmp);
+    printf("Please enter the date of your overtime request\n");
+    int check_date;
+    scanf("%d",&check_date);
+    if (timetable[check_date]==false)
+    {
+        printf("Admin is yet to prepare timetable for %d\nPlease check again later\n----------------\n",check_date);
+    }
+    if (check_date<=15)
+    {
+        //printf("%d in check leave,%s\n",tmp.month1[check_date],tmp.id);
+        if (timetable[check_date]==true && tmp.over1[check_date].req==-1)
+            printf("Your over time request on %d has been approved\n",check_date);
+        else if (timetable[check_date]==true && tmp.over1[check_date].req==0)
+            printf("Sorry.Your overtime request on %d has been declined by the manager\n",check_date);
+    }
+    else
+    {
+        if (timetable[check_date]==true && tmp.over2[check_date-15].req==-1)
+            printf("Your overtime request on %d has been approved\n",check_date);
+        else if (timetable[check_date]==true && tmp.over2[check_date-15].req==0)
+            printf("Sorry.Your overtime request on %d has been declined by the manager\n",check_date);
+    }
+}
 void check_leave_request(sec_info tmp)
 {
     tmp=last_occurence(tmp);
@@ -349,6 +390,41 @@ void check_leave_request(sec_info tmp)
         else if (timetable[check_date]==true && tmp.month2[check_date-15].place!=0)
             printf("Sorry.Your leave request on %d has been declined by the manager\n",check_date);
     }
+}
+void update_overtime(sec_info key,int date)
+{
+    sec_file=fopen ("SecurityInfo.txt","a+");
+    sec_info tmp;
+    sec_info input;
+    char id[20];
+    int count=0,i=0;
+        for(i =0;i<n_security;i++)
+    //while (fread (&input, sizeof(adm_info), 1, sec_file))
+    {
+        strcpy(id,person[i].id);
+        input=last_occurence(person[i]);
+        if (strcmp(input.id,key.id)==0 )
+        {
+            tmp=input;
+            fclose(sec_file);
+            if (date<=15)
+            {
+                tmp.over1[date].req=1;
+            }
+            else
+            {
+                tmp.over2[date-15].req=1;
+            }
+            sec_file=fopen("SecurityInfo.txt","a+");
+            fwrite (&tmp, sizeof(sec_info), 1,sec_file);
+            printf("Request Application updated successfully\n");
+            fclose(sec_file);
+            return;
+        }
+    }
+    printf("Error!Please try again\n");
+    security_login();
+
 }
 void update_request(sec_info key,int date)
 {
@@ -402,6 +478,7 @@ void request(sec_info tmp)
       printf("Enter request date in the form DD\n");
       int date;
       scanf("%d",&date);
+      update_overtime(tmp,date);
       //check for leave request on that date ie for a vacancy
       //update timetable and number of leaves for that person accordingly
     }
@@ -433,6 +510,8 @@ void view_duty(sec_info key)
                 printf("You don't have any duty on %d\n",f_day);
             else
                 printf("Duty at %d on %d from %d Hours to %d Hours\n",tmp.month1[f_day].place,f_day,tmp.month1[f_day].start,tmp.month1[f_day].end);
+            if (tmp.over1[f_day].req==-1)
+                printf("You have been approved overtime at %d on %d from %d to %d Hours\n",tmp.over1[f_day].place,f_day,tmp.over1[f_day].start,tmp.over1[f_day].end);
         }
      else
         {   if (f_day-15<=15)
@@ -441,6 +520,8 @@ void view_duty(sec_info key)
                 printf("You don't have any duty on %d\n",f_day-15);
             else
                 printf("Duty at %d on %d from %d Hours to %d Hours\n",tmp.month1[f_day-15].place,f_day-15,tmp.month2[f_day-15].start,tmp.month2[f_day-15].end);
+             if (tmp.over2[f_day-15].req==-1)
+                printf("You have been approved overtime at %d on %d from %d to %d Hours\n",tmp.over1[f_day-15].place,f_day,tmp.over1[f_day-15].start,tmp.over1[f_day-15].end);
           }
         }
     }
@@ -471,6 +552,7 @@ void view_leave(sec_info key)                               //change ret type in
 
 
 
+
 void security_login()
 {
   sec_info tmp;
@@ -490,7 +572,7 @@ void security_login()
   if(sec_valid(tmp)==true)
     {
       printf("You are successfully logged in\n");
-      printf("Enter 0 to Log out \n1 To view duty status for the next week \n2 To view leave status \n3 To request for leave or to do over duty\n4 To check status of leave request\n");
+      printf("Enter 0 to Log out \n1 To view duty status for the next week \n2 To view leave status \n3 To request for leave or to do over duty\n4 To check status of leave request\n5 To check overtime request\n");
       int option;
       scanf("%d",&option);
       if(option==0)
@@ -503,6 +585,8 @@ void security_login()
         {
             view_leave(tmp);
         }
+
+
       else if (option==3)
         {
             request(tmp);
@@ -511,6 +595,10 @@ void security_login()
         {
             check_leave_request(tmp);
         }
+      else if (option==5)
+      {
+          check_overtime_request(tmp);
+      }
       else
         {
             printf("Invalid input\n");
@@ -554,7 +642,7 @@ void check_status_by_admin()
             printf("%s is on duty at %d\n",identity,tmp.month2[TIME-16].place);
     }
     }
-    printf("\n%s has %d leaves left \n",identity,tmp.leaves);
+    printf("%s has %d leaves left \n-------------------------\n",identity,tmp.leaves);
 
 }
 
@@ -632,7 +720,7 @@ void approve_all(int date)
                 approved[count].month1[date].place=0;
             else
                 approved[count].month2[date-15].place=0;
-            approved[count].leaves+=1;
+            approved[count].leaves-=1;
             count++;
         }
     }
@@ -706,6 +794,7 @@ void make_timetable(int date)
                 if (in=='Y')
                     {
                         input.approved=true;
+                        input.leaves--;
                         if (date<=15)
                         {
                             input.month1[date].place=0;
@@ -788,6 +877,37 @@ void make_timetable(int date)
                tmp.month1[date].place=duty;
                tmp.month1[date].start=s;
                tmp.month1[date].end=e;
+               if (tmp.over1[date].req==1)
+               {
+                   printf("%s has requested for overtime on this day\n.Enter -1 to approve 0 to decline\n",tmp.id);
+                   int over,os,oe,oplace;
+                   scanf("%d",&over);
+                   if (over==-1)
+                   {
+                      tmp.over1[date].req=-1;
+                       printf("Enter the place of duty for %s:",tmp.id);
+                      scanf("%d",&oplace);
+                      printf("Enter the start time of the over time in 24 hours format in HH form\n");
+                      scanf("%d",&os);
+                      printf("Enter the end time of the duty in a similar format\n");
+                      scanf("%d",&oe);
+                      if ((os>=s && oe<=e)||(s>=os && e<=oe))
+                      {
+                          printf("Error in assigning duty time!Please try again\n------------------\n");
+                          make_timetable(date);
+                      }
+                      tmp.over1[date].place=oplace;
+                      tmp.over1[date].start=os;
+                      tmp.over1[date].end=oe;
+                      (tmp.leaves)++;
+
+                   }
+                   else
+                   {
+                       tmp.over1[date].req=0;
+                   }
+
+               }
                f_record[count++]=tmp;
                //printf("duty given is %d\n",f_record[count-1].month1[date]);
             }
@@ -797,7 +917,38 @@ void make_timetable(int date)
                tmp.month2[date].start=s;
                tmp.month2[date].end=e;
                f_record[count++]=tmp;
+               if (tmp.over1[date].req==1)
+               {
+                   printf("%s has requested for overtime on this day\n.Enter -1 to approve 0 to decline\n",tmp.id);
+                   int over,os,oe,oplace;
+                   scanf("%d",&over);
+                   if (over==-1)
+                   {
+                      tmp.over2[date-15].req=-1;
+                      (tmp.leaves)++;
+                       printf("Enter the place of duty for %s:",tmp.id);
+                      scanf("%d",&oplace);
+                      printf("Enter the start time of the over time in 24 hours format in HH form\n");
+                      scanf("%d",&os);
+                      printf("Enter the end time of the duty in a similar format\n");
+                      scanf("%d",&oe);
+                      if ((os>=s && oe<=e)||(s>=os && e<=oe))
+                      {
+                          printf("Error in assigning duty time!Please try again\n------------------\n");
+                          make_timetable(date);
+                      }
+                      tmp.over2[date-15].place=oplace;
+                      tmp.over2[date-15].start=os;
+                      tmp.over2[date-15].end=oe;
+                   }
+                   else
+                   {
+                       tmp.over2[date-15].req=0;
+                   }
+
+               }
             }
+
         }
         else if(tmp.request==1 && tmp.approved==true)
         {
@@ -839,7 +990,7 @@ void make_timetable(int date)
 void main_input()
 {
          printf("----------------\nDay %d\nMain Menu\n",TIME);
-        printf("Please enter -1 as a preference if no operations are left to be performed for today\n\n");
+        printf("Please enter -1 as a preference if no operations are left to be performed for today\n---------------------\n");
         while(1)
     {
 
@@ -897,7 +1048,7 @@ void salary()
     for(i=0;i<n_security;i++)
     {
         tmp=last_occurence(person[i]);
-        int exceed=tmp.leaves-const_leaves>0?tmp.leaves-const_leaves:0;
+        int exceed=tmp.leaves>0?0:(-1*tmp.leaves);
         int sal=def_salary-(exceed*fine);
         printf("Salary for %s is Rs. %d\n",tmp.id,sal);
     }
@@ -906,6 +1057,7 @@ void salary()
 int main()
 { int time_counter=0;
   int i;
+  printf("--------------------------------------\nINSTRUCTIONS:Security personnels are requested to submit requests for leave or over time for the next 7 days in advance\n----------------------------------\n");
   for(i=0;i<31;i++)                         //initializing timetable to all false i.e not prepared
     timetable[i]=false;
   for(time_counter=0;TIME<=30;TIME++)
