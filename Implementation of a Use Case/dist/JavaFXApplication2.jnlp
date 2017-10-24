@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="JavaFXApplication2.jnlp">
+  <information>
+    <title>JavaFXApplication2</title>
+    <vendor>amanpurwar</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="JavaFXApplication2.jar" size="198758" download="eager" />
+    <jar href="lib/dsn.jar" size="18478" download="eager" />
+    <jar href="lib/imap.jar" size="178013" download="eager" />
+    <jar href="lib/jfoenix.jar" size="2350676" download="eager" />
+    <jar href="lib/mail.jar" size="507849" download="eager" />
+    <jar href="lib/mailapi.jar" size="270835" download="eager" />
+    <jar href="lib/pop3.jar" size="43991" download="eager" />
+    <jar href="lib/smtp.jar" size="52787" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="JavaFXApplication2" >
+    <param name="requiredFXVersion" value="8.0+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="javafxapplication2.Main"  name="JavaFXApplication2" />
+  <update check="always"/>
+</jnlp>

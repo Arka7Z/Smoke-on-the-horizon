@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import com.jfoenix.controls.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #020217;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapplication2.DashboardController">
+   <children>
+      <JFXButton fx:id="reqbutton" layoutX="88.0" layoutY="229.0" onAction="#req" style="-fx-background-color: #120d35;" text="Request" textFill="#e1dcdc" />
+      <JFXButton fx:id="outbutton" layoutX="345.0" layoutY="229.0" onAction="#out" style="-fx-background-color: #120d35;" text="Log Out" textFill="#e1dcdc" />
+      <JFXButton fx:id="ttbutton" layoutX="88.0" layoutY="134.0" onAction="#viewtt" style="-fx-background-color: #120d35;" text="VIew Timetable" textFill="#e1dcdc" />
+      <JFXButton fx:id="eaccbutton" layoutX="337.0" layoutY="136.0" onAction="#eacc" style="-fx-background-color: #120d35;" text="Edit Account Details" textFill="#e1dcdc" />
+      <Text fill="WHITE" layoutX="146.0" layoutY="67.0" strokeType="OUTSIDE" strokeWidth="0.0" text="My DashBoard" wrappingWidth="252.79931640625">
+         <font>
+            <Font size="26.0" />
+         </font>
+      </Text>
+      <JFXButton fx:id="viewReqButton" buttonType="RAISED" layoutX="199.0" layoutY="235.0" onAction="#viewRequests" style="-fx-background-color: #120d35;" text="VIew Requests" textFill="WHITE" />
+      <Label fx:id="leavemsg" layoutX="98.0" layoutY="89.0" prefHeight="15.0" prefWidth="322.0" textFill="WHITE" />
+   </children>
+</AnchorPane>

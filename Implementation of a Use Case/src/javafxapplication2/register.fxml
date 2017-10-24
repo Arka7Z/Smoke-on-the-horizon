@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.effect.*?>
+<?import com.jfoenix.controls.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapplication2.RegisterController">
+   <children>
+      <TitledPane animated="false" layoutY="1.0" prefHeight="400.0" prefWidth="600.0" text="Sign Up Page">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <AnchorPane prefHeight="378.0" prefWidth="600.0" style="-fx-background-color: #020217;">
+                     <children>
+                        <Text fill="WHITE" layoutX="14.0" layoutY="26.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter the Following Details and We Will Get You Signed Up in No Time." />
+                        <JFXTextField fx:id="regUserName" focusColor="WHITE" layoutX="14.0" layoutY="48.0" promptText="Name" unFocusColor="WHITE" />
+                        <JFXTextField fx:id="regInstiID" focusColor="WHITE" layoutX="15.0" layoutY="238.0" promptText="Institute ID" unFocusColor="WHITE" />
+                        <JFXTextField fx:id="regEmail" focusColor="WHITE" layoutX="20.0" layoutY="304.0" promptText="email" unFocusColor="WHITE" />
+                        <JFXButton fx:id="registerButton" buttonType="RAISED" layoutX="215.0" layoutY="278.0" onAction="#register" prefHeight="39.0" prefWidth="96.0" style="-fx-background-color: #4059a9;" text="Register" textFill="WHITE">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></JFXButton>
+                        <JFXPasswordField fx:id="pass1" layoutX="16.0" layoutY="118.0" promptText="Password" unFocusColor="WHITE" />
+                        <JFXPasswordField fx:id="pass2" focusColor="WHITE" layoutX="14.0" layoutY="178.0" onAction="#checkpass" promptText="Re-enter password" unFocusColor="WHITE" />
+                        <Label fx:id="message" layoutX="203.0" layoutY="119.0" prefHeight="18.0" prefWidth="345.0" textFill="WHITE" />
+                        <Label fx:id="message2" layoutX="245.0" layoutY="171.0" prefHeight="15.0" prefWidth="258.0" textFill="WHITE" />
+                        <Label fx:id="message3" layoutX="245.0" layoutY="223.0" prefHeight="15.0" prefWidth="287.0" textFill="WHITE" />
+                     </children>
+                     <effect>
+                        <Glow />
+                     </effect>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+        </content>
+      </TitledPane>
+   </children>
+</AnchorPane>

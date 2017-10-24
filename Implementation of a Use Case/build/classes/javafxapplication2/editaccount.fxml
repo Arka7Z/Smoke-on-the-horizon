@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.effect.*?>
+<?import com.jfoenix.controls.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapplication2.EditaccountController">
+   <children>
+      <TitledPane animated="false" layoutY="1.0" prefHeight="400.0" prefWidth="600.0" text="Sign Up Page">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <AnchorPane prefHeight="378.0" prefWidth="600.0" style="-fx-background-color: #020217;">
+                     <children>
+                        <Text fill="WHITE" layoutX="290.0" layoutY="199.0" strokeType="OUTSIDE" strokeWidth="0.0" />
+                        <JFXTextField fx:id="regUserName" focusColor="WHITE" layoutX="18.0" layoutY="65.0" promptText="Name" unFocusColor="WHITE" />
+                        <JFXTextField fx:id="regEmail" focusColor="WHITE" layoutX="16.0" layoutY="250.0" promptText="email" unFocusColor="WHITE" />
+                        <JFXButton fx:id="updateButton" buttonType="RAISED" layoutX="215.0" layoutY="278.0" onAction="#update" prefHeight="39.0" prefWidth="96.0" style="-fx-background-color: #4059a9;" text="Update" textFill="WHITE" />
+                        <JFXPasswordField fx:id="pass1" layoutX="16.0" layoutY="118.0" promptText="Password" unFocusColor="WHITE" />
+                        <JFXPasswordField fx:id="pass2" focusColor="WHITE" layoutX="14.0" layoutY="178.0" onAction="#checkpass" promptText="Re-enter password" unFocusColor="WHITE" />
+                        <Label fx:id="message" layoutX="21.0" layoutY="18.0" prefHeight="18.0" prefWidth="517.0" textFill="WHITE" />
+                        <Label fx:id="message2" layoutX="235.0" layoutY="71.0" prefHeight="15.0" prefWidth="257.0" textFill="WHITE" />
+                        <Label fx:id="message3" layoutX="235.0" layoutY="134.0" prefHeight="15.0" prefWidth="274.0" textFill="WHITE" />
+                     </children>
+                     <effect>
+                        <Glow />
+                     </effect>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+        </content>
+      </TitledPane>
+   </children>
+</AnchorPane>

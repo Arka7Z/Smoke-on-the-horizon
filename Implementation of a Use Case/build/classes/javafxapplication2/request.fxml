@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import com.jfoenix.controls.*?>
+<?import javafx.scene.effect.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #020217;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapplication2.RequestController">
+   <children>
+      <TitledPane animated="false" layoutX="4.0" layoutY="5.0" prefHeight="365.0" prefWidth="582.0" style="-fx-background-color: #ffffff;" text="Request " textFill="#4059a9">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="290.0" prefWidth="456.0">
+               <children>
+                  <AnchorPane prefHeight="352.0" prefWidth="582.0" style="-fx-background-color: #020217;">
+                     <children>
+                        <MenuButton fx:id="requesttype" layoutX="32.0" layoutY="36.0" mnemonicParsing="false" style="-fx-background-color: #4059a9;" text="Request Type" textFill="WHITE">
+                          <items>
+                            <MenuItem id="leave" mnemonicParsing="false" onAction="#leaveselected" text="Leave" />
+                            <MenuItem id="overtime" mnemonicParsing="false" onAction="#overtimeselected" text="Overtime" />
+                          </items>
+                           <effect>
+                              <Glow />
+                           </effect>
+                        </MenuButton>
+                        <DatePicker fx:id="date" layoutX="32.0" layoutY="137.0" promptText="Select Date" />
+                        <JFXButton fx:id="updateRequestbutton" buttonType="RAISED" layoutX="25.0" layoutY="212.0" onAction="#updaterequest" prefHeight="41.0" prefWidth="152.0" style="-fx-background-color: #4059a9;" text="Update Request" textFill="WHITE">
+                           <effect>
+                              <Glow level="0.25" />
+                           </effect>
+                        </JFXButton>
+                        <JFXButton fx:id="button1" buttonType="RAISED" layoutX="24.0" layoutY="270.0" onAction="#goback" prefHeight="39.0" prefWidth="151.0" style="-fx-background-color: #4059a9;" text="Log Out" textFill="WHITE" />
+                        <Text fill="WHITE" layoutX="267.0" layoutY="225.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Plan your preferences.">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Text>
+                        <Label fx:id="qLabel" layoutX="179.0" layoutY="37.0" prefHeight="49.0" prefWidth="342.0" textFill="WHITE" />
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+        </content>
+      </TitledPane>
+   </children>
+</AnchorPane>

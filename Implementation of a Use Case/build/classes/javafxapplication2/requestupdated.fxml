@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import com.jfoenix.controls.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="258.0" prefWidth="474.0" style="-fx-background-color: #020217;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapplication2.RequestupdatedController">
+   <children>
+      <Text fill="WHITE" layoutX="46.0" layoutY="113.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Your request has been updated succesfully.">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Text>
+      <JFXButton fx:id="logoutbutton" buttonType="RAISED" layoutX="72.0" layoutY="179.0" onAction="#logout" style="-fx-background-color: #1f0553;" text="Log Out" textFill="#fcfcfc">
+         <effect>
+            <Glow />
+         </effect>
+      </JFXButton>
+      <JFXButton fx:id="dashbutton" buttonType="RAISED" layoutX="204.0" layoutY="181.0" onAction="#gotodash" style="-fx-background-color: #1f0553;" text="Go to DashBoard" textFill="#fcfcfc">
+         <effect>
+            <Glow />
+         </effect>
+      </JFXButton>
+   </children>
+</AnchorPane>
