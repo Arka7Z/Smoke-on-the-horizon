@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.effect.*?>
+<?import com.jfoenix.controls.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="360.0" prefWidth="532.0" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapplication2.FXMLDocumentController">
+    <children>
+      <Pane fx:id="pane" layoutX="9.0" layoutY="15.0" prefHeight="330.0" prefWidth="512.0" style="-fx-background-color: #000000;">
+         <children>
+            <JFXButton fx:id="signinbutton" buttonType="RAISED" layoutX="40.0" layoutY="288.0" onAction="#signin" prefHeight="33.0" prefWidth="83.0" ripplerFill="#e4dede" style="-fx-background-color: #191435;" text="Welcome" textFill="WHITE">
+               <effect>
+                  <Glow level="0.22" />
+               </effect>
+            </JFXButton>
+            <ImageView fitHeight="271.0" fitWidth="434.0" layoutX="70.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../res/hi.jpg" />
+               </image>
+            </ImageView>
+            <Text fill="WHITE" layoutX="310.0" layoutY="309.0" strokeType="OUTSIDE" strokeWidth="0.0" text="© OCSMS, McQueen 7Z" />
+            <Circle layoutX="417.0" layoutY="28.0" radius="22.0" stroke="BLACK" strokeType="INSIDE" />
+            <Circle layoutX="407.0" layoutY="260.0" radius="37.0" stroke="BLACK" strokeType="INSIDE" />
+         </children>
+      </Pane>
+    </children>
+   <effect>
+      <DropShadow />
+   </effect>
+</AnchorPane>

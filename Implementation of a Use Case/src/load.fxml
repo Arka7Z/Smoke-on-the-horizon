@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.effect.*?>
+<?import com.jfoenix.controls.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="304.0" prefWidth="538.0" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapplication2.LoadController">
+   <children>
+      <Pane layoutX="320.0" layoutY="12.0" prefHeight="180.0" prefWidth="246.0" style="-fx-background-color: #000000;">
+         <children>
+            <JFXTextField fx:id="name" focusColor="WHITE" layoutX="44.0" layoutY="41.0" promptText="Username" unFocusColor="WHITE">
+               <cursor>
+                  <Cursor fx:constant="TEXT" />
+               </cursor></JFXTextField>
+            <JFXPasswordField fx:id="pass" focusColor="WHITE" layoutX="46.0" layoutY="116.0" promptText="Password" unFocusColor="WHITE">
+               <cursor>
+                  <Cursor fx:constant="TEXT" />
+               </cursor></JFXPasswordField>
+            <Label fx:id="nameLabel" layoutX="44.0" layoutY="26.0" prefHeight="15.0" prefWidth="75.0" textFill="WHITE" />
+            <Label fx:id="nameLabel2" layoutX="46.0" layoutY="101.0" prefHeight="15.0" prefWidth="75.0" textFill="WHITE" />
+         </children>
+      </Pane>
+      <ImageView fitHeight="232.0" fitWidth="320.0" layoutX="22.0" layoutY="26.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../res/hi.jpg" />
+         </image>
+      </ImageView>
+      <Label fx:id="message" layoutX="298.0" layoutY="193.0" prefHeight="15.0" prefWidth="255.0" textFill="WHITE" />
+      <JFXButton fx:id="inbutton" buttonType="RAISED" layoutX="269.0" layoutY="233.0" onAction="#newsignin" style="-fx-background-color: #4059a9;" text="Sign In" textFill="WHITE">
+         <effect>
+            <Glow />
+         </effect>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </JFXButton>
+      <JFXButton fx:id="upbutton" layoutX="399.0" layoutY="233.0" onAction="#newsignup" style="-fx-background-color: #4059a9;" text="Sign Up" textFill="WHITE">
+         <effect>
+            <Glow />
+         </effect>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </JFXButton>
+      <Circle layoutX="320.0" layoutY="36.0" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+   </children>
+</AnchorPane>
